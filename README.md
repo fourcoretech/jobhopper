@@ -1,6 +1,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring--Boot-3.4.3-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![License](https://img.shields.io/github/license/erri0n/ai-powered-resume-analyzer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Java](https://img.shields.io/badge/java-21-blue)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)
 
