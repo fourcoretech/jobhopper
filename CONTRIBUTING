@@ -1,0 +1,19 @@
+# Contributing to AI-Powered Resume Analyzer
+
+Thanks for your interest in contributing!
+
+## How to Contribute
+
+1. Fork the repo
+2. Clone your fork
+3. Create a feature branch
+4. Make your changes
+5. Push and create a pull request
+
+## Requirements
+
+- Java 21
+- Maven
+- Follow existing code style and structure
+
+For any questions or proposals, open an issue first.

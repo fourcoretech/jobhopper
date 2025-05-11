@@ -1,0 +1,63 @@
+# Java and Maven
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.out
+*.tmp
+*.swp
+*.swo
+
+# Build directories
+target/
+bin/
+build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Maven
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+.mvn/
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+._*
+
+# Spring Boot
+*.pid
+*.hprof
+
+# H2 Database
+*.mv.db
+*.trace.db
+
+# Test Reports
+surefire-reports/
+
+# Environment variables
+.env
+
+# Secrets
+application.properties
+application.yml
+application-*.properties
+application-*.yml

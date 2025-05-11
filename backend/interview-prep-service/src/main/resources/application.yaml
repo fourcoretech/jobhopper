@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+ws:
+  endpoint:
+    open-ai-api: "https://api.openai.com/v1/chat/completions"
+jwt:
+  secret: YOUR_GENERATED_SECRET  # Must match the one in auth-service
+openai:
+  api-key: YOUR_OPENAI_API_KEY
+
