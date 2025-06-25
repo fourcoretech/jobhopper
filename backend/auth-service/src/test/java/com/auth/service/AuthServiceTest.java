@@ -1,13 +1,12 @@
 package com.auth.service;
 
-import com.auth.dto.AuthenticationRequest;
-import com.auth.dto.UserDTO;
-import com.auth.dto.UserProfile;
 import com.auth.entity.User;
+import com.auth.model.dto.AuthenticationRequest;
+import com.auth.model.dto.UserDTO;
+import com.auth.model.dto.UserProfile;
 import com.auth.repository.UserRepository;
 import com.resume.common.library.config.JwtUtil;
-import com.resume.common.library.dto.BaseResponse;
-import com.resume.common.library.dto.SecurityRoles;
+import com.resume.common.library.model.base.enumerations.SecurityRoles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,6 +37,9 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private ProducerService producerService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -65,7 +67,7 @@ class AuthServiceTest {
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userProfile);
         when(jwtUtil.generateToken(eq(username), anyString())).thenReturn("mocked-jwt-token");
 
-        String token = authService.generateAuthToken(username, password);
+        String token = authService.authenticateUser(username, password);
 
         assertNotNull(token, "Token should not be null");
         assertEquals("mocked-jwt-token", token);
@@ -91,7 +93,7 @@ class AuthServiceTest {
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userProfile);
         when(jwtUtil.generateToken(eq(username), anyString())).thenReturn("mocked-jwt-token");
 
-        String token = authService.generateAuthToken(username, password);
+        String token = authService.authenticateUser(username, password);
 
         assertNotNull(token, "Token should not be null");
         assertEquals("mocked-jwt-token", token);
@@ -108,7 +110,7 @@ class AuthServiceTest {
         when(userDetailsService.loadUserByUsername(authRequest.getUsername())).thenReturn(userDetails);
         when(passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> authService.generateAuthToken(authRequest.getUsername(), authRequest.getPassword()));
+        assertThrows(RuntimeException.class, () -> authService.authenticateUser(authRequest.getUsername(), authRequest.getPassword()));
         verify(userDetailsService, times(1)).loadUserByUsername(authRequest.getUsername());
     }
 
@@ -117,49 +119,49 @@ class AuthServiceTest {
         AuthenticationRequest authRequest = new AuthenticationRequest("user@example.com", "wrongpassword");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new RuntimeException("Authentication failed"));
-        assertThrows(RuntimeException.class, () -> authService.generateAuthToken(authRequest.getUsername(), authRequest.getPassword()));
+        assertThrows(RuntimeException.class, () -> authService.authenticateUser(authRequest.getUsername(), authRequest.getPassword()));
     }
 
     @Test
     void testCreateNewUser_Success() {
-        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004");
+        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004", SecurityRoles.USER.getRole());
         User user = new User(1L, userDTO.getUsername(), "encodedPassword", SecurityRoles.USER.getRole(), userDTO.getEmail(), userDTO.getPhone(), LocalDateTime.now().toString());
         when(userRepository.save(any(User.class))).thenReturn(user);
-        BaseResponse response = authService.createNewUser(userDTO, SecurityRoles.USER.getRole());
+        String response = authService.createNewUser(userDTO);
         assertNotNull(response);
-        assertTrue(response.isSuccess());
+        assertEquals("User user created successfully.", response);
         verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     void testCreateNewAdmin_Success() {
-        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004");
+        UserDTO userDTO = new UserDTO("admin", "password", "test", "user", "user@example.com", "281-330-8004", SecurityRoles.ADMIN.getRole());
         User user = new User(1L, userDTO.getUsername(), "encodedPassword", SecurityRoles.ADMIN.getRole(), userDTO.getEmail(), userDTO.getPhone(), LocalDateTime.now().toString());
         when(userRepository.save(any(User.class))).thenReturn(user);
-        BaseResponse response = authService.createNewUser(userDTO, SecurityRoles.ADMIN.getRole());
+        String response = authService.createNewUser(userDTO);
         assertNotNull(response);
-        assertTrue(response.isSuccess());
+        assertEquals("User admin created successfully.", response);
         verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     void testCreateNewUser_Failure() {
-        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004");
+        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004", SecurityRoles.USER.getRole());
 
         when(passwordEncoder.encode(userDTO.getPassword())).thenThrow(new RuntimeException("Encoding error"));
 
-        assertThrows(RuntimeException.class, () -> authService.createNewUser(userDTO, SecurityRoles.USER.getRole()));
+        assertThrows(RuntimeException.class, () -> authService.createNewUser(userDTO));
         verify(passwordEncoder, times(1)).encode(userDTO.getPassword());
     }
 
     @Test
     void testCreateNewAdmin_ExistingUser() {
-        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004");
+        UserDTO userDTO = new UserDTO("user", "password", "test", "user", "user@example.com", "281-330-8004", SecurityRoles.ADMIN.getRole());
         User user = new User(1L, userDTO.getUsername(), "encodedPassword", SecurityRoles.ADMIN.getRole(), userDTO.getEmail(), userDTO.getPhone(), LocalDateTime.now().toString());
         when(userRepository.findByUsername(userDTO.getUsername())).thenReturn(user);
-        BaseResponse response = authService.createNewUser(userDTO, SecurityRoles.ADMIN.getRole());
+        String response = authService.createNewUser(userDTO);
         assertNotNull(response);
-        assertFalse(response.isSuccess());
+        assertEquals("User user already exists.", response);
         verify(userRepository, times(1)).findByUsername(anyString());
     }
 }

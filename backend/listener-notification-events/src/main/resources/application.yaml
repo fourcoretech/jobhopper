@@ -1,0 +1,21 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: listener-notification-events
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: notification-group
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 5cd1437a966654
+    password: a78cf6b9a1d2d9
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+logging:
+  level:
+    root: INFO

@@ -1,7 +1,7 @@
 package com.resume.common.library.client;
 
-import com.resume.common.library.dto.ChatCompletionDTO;
-import com.resume.common.library.dto.GPTPrompt;
+import com.resume.common.library.model.openai.dto.ChatCompletionDTO;
+import com.resume.common.library.model.openai.dto.GPTPrompt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -3,7 +3,8 @@ package com.auth.config;
 
 import com.auth.controller.AuthController;
 import com.auth.exception.AuthException;
-import com.resume.common.library.exception.JWTException;
+import com.auth.exception.JWTException;
+import com.resume.common.library.exception.NotificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -80,5 +81,13 @@ public class ExceptionHandlerConfig {
         return ResponseEntity
                 .status(authException.getStatusCode())
                 .body(authException.getErrorMessage());
+    }
+
+    @ExceptionHandler({NotificationException.class})
+    public static ResponseEntity<String> notificationException(NotificationException notificationException) {
+        log.error(notificationException.getErrorMessage());
+        return ResponseEntity
+                .status(notificationException.getStatusCode())
+                .body(notificationException.getErrorMessage());
     }
 }

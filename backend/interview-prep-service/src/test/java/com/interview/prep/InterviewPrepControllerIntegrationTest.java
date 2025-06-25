@@ -49,7 +49,7 @@ class InterviewPrepControllerIntegrationTest {
         when(resumeParserService.extractText(resumeFile)).thenReturn(resumeText);
         when(interviewBotService.generateInterviewQuestions(resumeText)).thenReturn(interviewQuestions);
 
-        mockMvc.perform(multipart("/interview/prepare")
+        mockMvc.perform(multipart("/resume/interview-prep")
                         .file(resumeFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string(interviewQuestions));
@@ -61,7 +61,7 @@ class InterviewPrepControllerIntegrationTest {
     @Test
     void testPrepareInterview_InvalidFileFormat() throws Exception {
         MockMultipartFile invalidFile = new MockMultipartFile("file", "resume.txt", MediaType.TEXT_PLAIN_VALUE, "Invalid file content".getBytes());
-        mockMvc.perform(multipart("/interview/prepare")
+        mockMvc.perform(multipart("/resume/interview-prep")
                         .file(invalidFile))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(resumeParserService, interviewBotService);
@@ -71,7 +71,7 @@ class InterviewPrepControllerIntegrationTest {
     void testPrepareInterview_FileSizeExceedsLimit() throws Exception {
         byte[] largeFileContent = new byte[6 * 1024 * 1024];
         MockMultipartFile largeFile = new MockMultipartFile("file", "resume.pdf", MediaType.APPLICATION_PDF_VALUE, largeFileContent);
-        mockMvc.perform(multipart("/interview/prepare")
+        mockMvc.perform(multipart("/resume/interview-prep")
                         .file(largeFile))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(resumeParserService, interviewBotService);

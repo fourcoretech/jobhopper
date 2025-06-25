@@ -1,13 +1,11 @@
 package com.resume.common.library.client;
 
-import com.resume.common.library.dto.ChatCompletionDTO;
-import com.resume.common.library.dto.GPTPrompt;
 import com.resume.common.library.exception.OpenAIException;
+import com.resume.common.library.model.openai.dto.ChatCompletionDTO;
+import com.resume.common.library.model.openai.dto.GPTPrompt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -19,14 +17,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 public class OpenAIClient {
-    @Autowired
-    private final WebClient webClient;
 
-    @Value("${ws.endpoint.open-ai-api}")
-    private String baseURL;
-
-    @Value("${openai.api-key}")
-    private String apiKey;
+    private final WebClient openAiWebClient;
 
     @Retryable(
             value = {Exception.class},
@@ -34,24 +26,26 @@ public class OpenAIClient {
             backoff = @Backoff(delay = 2000)
     )
     public ChatCompletionDTO prompt(GPTPrompt prompt) {
+
         try {
-            return webClient.post()
-                    .uri(baseURL)
-                    .header("Authorization", "Bearer " + apiKey)
+            return openAiWebClient.post()
+                    .uri("/chat/completions")
                     .bodyValue(prompt)
                     .retrieve()
-                    .onStatus(HttpStatusCode::isError, response -> {
-                        log.error("Chat GPT API failed to execute prompt {}.", prompt);
-                        return response.bodyToMono(String.class)
-                                .flatMap(errorBody -> Mono.error(new OpenAIException(
-                                        String.format("Failed to execute prompt: %s. %s", prompt, errorBody), HttpStatusCode.valueOf(500))));
-                    })
-                    .bodyToMono(new ParameterizedTypeReference<ChatCompletionDTO>() {
-                    })
+                    .onStatus(HttpStatusCode::isError, response ->
+                            response.bodyToMono(String.class)
+                                    .flatMap(body -> Mono.error(new OpenAIException(
+                                            String.format("OpenAI error (%d): %s", response.statusCode().value(), body),
+                                            response.statusCode()
+                                    )))
+                    )
+                    .bodyToMono(ChatCompletionDTO.class)
                     .block();
-        } catch (Exception e) {
-            log.error("Error occurred while calling OpenAI API: {}", e.getMessage(), e);
-            throw new OpenAIException("The OpenAI API request failed. Please try again later.", HttpStatusCode.valueOf(500));
+        } catch (Exception ex) {
+            log.error("OpenAI call failed: {}", ex.getMessage(), ex);
+            throw (ex instanceof OpenAIException)
+                    ? (OpenAIException) ex
+                    : new OpenAIException("OpenAI request failed.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

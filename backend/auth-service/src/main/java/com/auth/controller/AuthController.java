@@ -1,11 +1,9 @@
 package com.auth.controller;
 
-import com.auth.dto.AuthenticationRequest;
-import com.auth.dto.AuthenticationResponse;
-import com.auth.dto.UserDTO;
+import com.auth.model.dto.AuthenticationRequest;
+import com.auth.model.dto.UserDTO;
 import com.auth.service.AuthService;
-import com.resume.common.library.dto.BaseResponse;
-import com.resume.common.library.dto.SecurityRoles;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +21,15 @@ public class AuthController {
     @Autowired
     private final AuthService authService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest) {
-        log.info("Authentication started...");
-        String token = authService.generateAuthToken(authRequest.getUsername(), authRequest.getPassword());
-        return ResponseEntity.ok(new AuthenticationResponse(token));
-    }
-
-    @PostMapping(value = "/user/register")
-    public ResponseEntity<BaseResponse> registerUser(@RequestBody UserDTO user) {
+    @PostMapping(value = "/register")
+    public ResponseEntity<String> register(@Valid @RequestBody UserDTO user) {
         log.info("Creating new user...");
-        return ResponseEntity.ok(authService.createNewUser(user, SecurityRoles.USER.getRole()));
+        return ResponseEntity.ok(authService.createNewUser(user));
     }
 
-    @PostMapping(value = "/admin/register")
-    public ResponseEntity<BaseResponse> registerAdmin(@RequestBody UserDTO user) {
-        log.info("Creating new admin...");
-        return ResponseEntity.ok(authService.createNewUser(user, SecurityRoles.ADMIN.getRole()));
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody AuthenticationRequest authRequest) {
+        log.info("Authentication started...");
+        return ResponseEntity.ok(authService.authenticateUser(authRequest.getUsername(), authRequest.getPassword()));
     }
 }

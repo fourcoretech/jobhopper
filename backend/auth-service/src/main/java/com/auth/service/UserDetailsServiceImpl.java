@@ -1,10 +1,10 @@
 package com.auth.service;
 
-import com.auth.dto.UserProfile;
 import com.auth.entity.User;
 import com.auth.exception.AuthException;
+import com.auth.model.dto.UserProfile;
 import com.auth.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private final UserRepository userRepository;
@@ -29,8 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 log.error("Failed to load user. {} was not found in the database", username);
                 throw new AuthException(String.format("User not found with username: %s", username), HttpStatusCode.valueOf(404));
             }
-            log.info("User found.");
-            log.info("Total users in table: {}", userRepository.findAll().size());
+            log.info("User found. Total users in table: {}", userRepository.findAll().size());
             return new UserProfile(user);
         } catch (Exception e) {
             log.error("Error loading user by username: {}", e.getMessage());

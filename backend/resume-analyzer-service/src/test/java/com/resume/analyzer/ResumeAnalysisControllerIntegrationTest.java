@@ -1,6 +1,6 @@
 package com.resume.analyzer;
 
-import com.resume.analyzer.service.ResumeScoringService;
+import com.resume.analyzer.service.ResumeAnalysisService;
 import com.resume.common.library.service.ResumeExtractorService;
 import com.resume.common.library.service.ResumeParserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class ResumeAnalysisControllerIntegrationTest {
     private ResumeExtractorService resumeExtractorService;
 
     @MockBean
-    private ResumeScoringService resumeScoringService;
+    private ResumeAnalysisService resumeAnalysisService;
 
     private MockMvc mockMvc;
 
@@ -52,7 +52,7 @@ class ResumeAnalysisControllerIntegrationTest {
 
         when(resumeParserService.extractText(resumeFile)).thenReturn(resumeText);
         when(resumeExtractorService.extractInfo(resumeText)).thenReturn(extractedInfo);
-        when(resumeScoringService.analyzeResume(resumeText)).thenReturn(scoringResult);
+        when(resumeAnalysisService.analyzeResume(resumeText)).thenReturn(scoringResult);
 
         mockMvc.perform(multipart("/analysis/analyze")
                         .file(resumeFile))
@@ -61,14 +61,14 @@ class ResumeAnalysisControllerIntegrationTest {
 
         verify(resumeParserService, times(1)).extractText(resumeFile);
         verify(resumeExtractorService, times(1)).extractInfo(resumeText);
-        verify(resumeScoringService, times(1)).analyzeResume(resumeText);
+        verify(resumeAnalysisService, times(1)).analyzeResume(resumeText);
     }
 
     @Test
     void testAnalyzeResume_NoFileUploaded() throws Exception {
         mockMvc.perform(multipart("/analysis/analyze"))
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(resumeParserService, resumeExtractorService, resumeScoringService);
+        verifyNoInteractions(resumeParserService, resumeExtractorService, resumeAnalysisService);
     }
 
     @Test
@@ -76,6 +76,6 @@ class ResumeAnalysisControllerIntegrationTest {
         MockMultipartFile emptyFile = new MockMultipartFile("file", null, MediaType.APPLICATION_PDF_VALUE, new byte[0]);
         mockMvc.perform(multipart("/analysis/analyze")
                 .file(emptyFile)).andExpect(status().isBadRequest());
-        verifyNoInteractions(resumeExtractorService, resumeScoringService);
+        verifyNoInteractions(resumeExtractorService, resumeAnalysisService);
     }
 }

@@ -1,5 +1,6 @@
 package com.resume.common.library.config;
 
+import com.resume.common.library.model.base.enumerations.SecurityRoles;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,7 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String finalRole = (role != null) ? role : "USER";
+                String finalRole = (role != null) ? role : SecurityRoles.USER.getRole();
                 List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                         new SimpleGrantedAuthority("ROLE_" + finalRole));
 

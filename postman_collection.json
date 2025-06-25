@@ -1,0 +1,209 @@
+{
+  "info": {
+    "_postman_id": "0717a680-f58a-4877-8d9c-45890d3fce54",
+    "name": "AI-Powered Resume Analyzer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38916284"
+  },
+  "item": [
+    {
+      "name": "auth-service",
+      "item": [
+        {
+          "name": "register user",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"user\",\r\n    \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8080/auth/register",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "authenticate",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"user\",\r\n    \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8080/auth/login",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "resume-analysis-service",
+      "item": [
+        {
+          "name": "resume analyzer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "paste_your_token_here",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "address_of_your_resume_file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:8082/resume/analyze",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "resume",
+                "analyze"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "job matching",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "paste_your_token_here",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "address_of_your_resume_file"
+                },
+                {
+                  "key": "jobDescription",
+                  "value": "Paste the job description here",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:8082/resume/job-match",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "resume",
+                "job-match"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "interview-prep-service",
+      "item": [
+        {
+          "name": "prepare",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "paste_your_token_here",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "address_of_your_resume_file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:8081/resume/interview-prep",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "resume",
+                "interview-prep"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

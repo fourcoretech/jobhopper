@@ -16,7 +16,6 @@ public class ResumeExtractorService {
     public Map<String, String> extractInfo(String resumeText) {
         try {
             Map<String, String> extractedData = new HashMap<>();
-            // Assume first non-empty line is the candidate's name
             String[] lines = resumeText.split("\n");
             for (String line : lines) {
                 if (!line.trim().isEmpty()) {
@@ -25,14 +24,12 @@ public class ResumeExtractorService {
                 }
             }
 
-            // Extract Email
             Matcher emailMatcher = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")
                     .matcher(resumeText);
             if (emailMatcher.find()) {
                 extractedData.put("email", emailMatcher.group());
             }
 
-            // Extract Phone
             Matcher phoneMatcher = Pattern.compile("\\+?\\d{10,13}").matcher(resumeText);
             if (phoneMatcher.find()) {
                 extractedData.put("phone", phoneMatcher.group());

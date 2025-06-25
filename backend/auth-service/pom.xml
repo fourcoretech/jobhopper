@@ -14,11 +14,21 @@
     <artifactId>auth-service</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-        <!-- Common Lib Dependency for resume text extraction -->
         <dependency>
             <groupId>com.resume</groupId>
             <artifactId>common-library</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.auth.AuthApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

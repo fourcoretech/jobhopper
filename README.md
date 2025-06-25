@@ -3,12 +3,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Java](https://img.shields.io/badge/java-21-blue)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)
+[![API Docs](https://img.shields.io/badge/API-Documentation-blue)](./docs/api.md)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](./docker-compose.yml)
+[![OpenAI](https://img.shields.io/badge/AI-OpenAI%20GPT-orange)](https://openai.com)
 
 # AI-Powered Resume Analyzer
 
-The **AI-Powered Resume Analyzer** is a collection of microservices designed to analyze resumes, provide interview
-preparation assistance, and manage authentication. Built with **Java 21** and **Spring Boot**, the backend is modular,
-scalable, and integrates seamlessly with OpenAI's GPT models for AI-driven insights.
+> Transform your hiring process with AI-driven resume analysis and interview preparation
+
+The **AI-Powered Resume Analyzer** is a sophisticated suite of microservices that revolutionizes the hiring process through:
+- 🎯 Intelligent resume parsing and analysis
+- 💡 AI-powered feedback and scoring
+- 🎓 Automated interview question generation
+- 🔒 Secure user authentication and authorization
+
+Built with **Java 21** and **Spring Boot 3.4.3**, this system leverages OpenAI's GPT models to provide actionable insights for both recruiters and job seekers. The microservices architecture ensures scalability, maintainability, and rapid deployment.
 
 ---
 
@@ -70,36 +79,89 @@ Each service is designed as an independent Spring Boot application, ensuring mod
 
 ## Services
 
-### 1. Common Library
+### 1. Common Library (`common-library`)
+* 📚 Shared utilities, DTOs, and configurations
+* 🔌 OpenAI client integration
+* 🛠️ Common security configurations
+* 📋 Shared data models and interfaces
 
-* Shared utilities, DTOs, and configurations used across all services.
-* Includes the OpenAIClient for interacting with OpenAI APIs.
+### 2. Resume Analyzer Service (`resume-analyzer-service`)
+* 📄 Advanced resume parsing with Apache Tika
+* 🤖 AI-powered skill extraction and matching
+* 📊 Detailed resume scoring and feedback
+* 🔍 Experience and education validation
 
-### 2. Resume Analyzer Service
+### 3. Interview Preparation Service (`interview-prep-service`)
+* 💭 Dynamic interview question generation
+* 📝 Personalized answer suggestions
+* 🎯 Role-specific question adaption
+* 💡 Interview strategy recommendations
 
-* Parses resumes and extracts key information such as skills, experience, and education.
-* Provides AI-powered feedback and recommendations for improving resumes.
+### 4. Authentication Service (`auth-service`)
+* 🔐 JWT-based authentication
+* 👥 User management and authorization
+* 🔒 OAuth2 integration
+* 🛡️ Role-based access control
 
-### 3. Interview Preparation Service
-
-* Generates interview questions and answers based on job descriptions and resumes.
-* Offers tips and strategies for interview preparation.
-
-### 4. Authentication Service
-
-* Manages user authentication and authorization.
-* Implements OAuth2 and JWT-based security.
+### 5. Event Listener Service (`listener-notification-events`)
+* 📨 Real-time event processing
+* 🔔 Notification management
+* 📱 Multi-channel delivery
+* 📊 Event tracking and monitoring
 
 ---
 
 ## Installation
 
+### Prerequisites
+* Java Development Kit (JDK) 21
+* Maven 3.8+
+* Docker and Docker Compose
+* OpenAI API key
+* Git
+
+### Quick Start
 1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/ai-powered-resume-analyzer.git
+   cd ai-powered-resume-analyzer
+   ```
 
-bash
-git clone https://github.com/erri0n/ai-powered-resume-analyzer.git
-cd ai-powered-resume-analyzer
+2. Configure environment variables:
+   ```bash
+   # Create environment files
+   cp .env.example .env
+   
+   # Edit .env file with your configurations
+   OPENAI_API_KEY=your_api_key
+   JWT_SECRET=your_jwt_secret
+   ```
 
+3. Build all services:
+   ```bash
+   mvn clean install
+   ```
+
+4. Start with Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+
+### Manual Setup
+For development, you can run services individually:
+
+1. Build the common library first:
+   ```bash
+   cd common-library
+   mvn clean install
+   ```
+
+2. Configure each service's `application.yaml`
+3. Start services in order:
+   - Authentication Service
+   - Resume Analyzer Service
+   - Interview Preparation Service
+   - Event Listener Service
 
 ---
 
@@ -227,6 +289,71 @@ Pull requests and feature suggestions are welcome. For major changes, please ope
 
 ---
 
+## Development Commands
+
+### Build and Test
+- Build all services: `mvn clean install`
+- Run all tests: `mvn test`
+- Build specific service: `mvn clean install -pl <service-name>`
+- Test specific service: `mvn test -pl <service-name>`
+
+### Running Services
+Services must be started in dependency order:
+1. Build common library first: `cd backend/common-library && mvn clean install`
+2. Start services individually:
+   - Auth service (port 8080): `mvn spring-boot:run -pl backend/auth-service`
+   - Resume analyzer (port 8082): `mvn spring-boot:run -pl backend/resume-analyzer-service` 
+   - Interview prep (port 8081): `mvn spring-boot:run -pl backend/interview-prep-service`
+   - Event listener (port 8083): `mvn spring-boot:run -pl backend/listener-notification-events`
+
+### Docker Development
+- Start all services: `docker-compose up -d`
+- Stop all services: `docker-compose down`
+- Rebuild and start: `docker-compose up -d --build`
+
+## Architecture Overview
+
+### Microservices Structure
+This is a Spring Boot microservices architecture with 5 main components:
+
+1. **common-library**: Shared utilities, DTOs, OpenAI client, JWT utilities, and security configurations used by all services
+2. **auth-service**: JWT-based authentication with H2 database, user management
+3. **resume-analyzer-service**: Resume parsing with Apache Tika, AI-powered analysis via OpenAI API
+4. **interview-prep-service**: AI-generated interview questions using OpenAI API
+5. **listener-notification-events**: Kafka event consumer for notifications
+
+### Key Dependencies
+- Java 21 + Spring Boot 3.4.3
+- Apache Tika for resume parsing
+- OpenAI API integration via WebClient
+- JWT for stateless authentication
+- H2 database for local development
+- Kafka for event messaging
+- Spring Security with OAuth2
+
+### Service Communication
+- Services communicate via HTTP REST APIs
+- Authentication required via JWT tokens from auth-service
+- Event-driven communication through Kafka topics
+- Common library provides shared OpenAI client and security configurations
+
+### Configuration Requirements
+- OpenAI API key must be configured in application.yaml for resume-analyzer and interview-prep services
+- JWT secret generated using JwtSecretGenerator in common-library
+- Kafka bootstrap servers configured (default: kafka:9092)
+- H2 database used for local development
+
+### Testing
+- Each service has unit tests and integration tests in src/test/java
+- Integration tests use Spring Boot Test framework
+- Postman collection available at postman_collection.json for API testing
+
+## Development Workflow
+When working on features:
+1. Always build common-library first if making shared changes
+2. Services have dependencies: auth-service is required by others for JWT validation
+3. Use existing patterns for new endpoints (follow controller → service → repository pattern)
+4. OpenAI integration should use the shared OpenAIService from common-library
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](./LICENSE) for more information.

@@ -3,7 +3,6 @@ package com.interview.prep.config;
 
 import com.interview.prep.controller.InterviewPrepController;
 import com.interview.prep.exception.InterviewPrepException;
-import com.resume.common.library.exception.JWTException;
 import com.resume.common.library.exception.OpenAIException;
 import com.resume.common.library.exception.ResumeException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +17,6 @@ import org.springframework.web.client.HttpClientErrorException;
 @ControllerAdvice(assignableTypes = {InterviewPrepController.class})
 @Slf4j
 public class ExceptionHandlerConfig {
-
-    @ExceptionHandler({JWTException.class})
-    public static ResponseEntity<String> jwtException(JWTException jwtException) {
-        log.error(jwtException.getErrorMessage());
-        return ResponseEntity
-                .status(jwtException.getStatusCode())
-                .body(jwtException.getErrorMessage());
-    }
 
     @ExceptionHandler({HttpClientErrorException.class})
     public static ResponseEntity<String> httpClientErrorException(HttpClientErrorException httpClientErrorException) {

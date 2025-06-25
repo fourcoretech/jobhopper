@@ -11,11 +11,9 @@ public class JobMatchingService {
     private final OpenAIService openAIService;
 
     public String matchJob(String resumeText, String jobDescription) {
-        String prompt = "Given the following resume:\n" + resumeText +
-                "\nAnd the following job description:\n" + jobDescription +
-                "\nPlease provide a match score (0-100) and " +
-                "recommendations to improve the resume's fit " +
-                "along with recommended topics to study.";
+        String prompt = "Compare this resume to the following job description. " +
+                "Give a compatibility score from 0 to 100 based on required skills, experience, and keywords. " +
+                "List strengths, weaknesses, and ways to improve alignment.";
         return openAIService.callGPT(prompt);
     }
 }

@@ -2,11 +2,11 @@ package com.resume.common.library.service;
 
 
 import com.resume.common.library.client.OpenAIClient;
-import com.resume.common.library.dto.ChatCompletionDTO;
-import com.resume.common.library.dto.GPTModels;
-import com.resume.common.library.dto.GPTPrompt;
-import com.resume.common.library.dto.Messages;
 import com.resume.common.library.exception.OpenAIException;
+import com.resume.common.library.model.openai.dto.ChatCompletionDTO;
+import com.resume.common.library.model.openai.dto.GPTPrompt;
+import com.resume.common.library.model.openai.dto.Messages;
+import com.resume.common.library.model.openai.enumerations.GPTModels;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;

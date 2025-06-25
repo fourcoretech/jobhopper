@@ -1,12 +1,9 @@
 package com.auth.service;
 
-import com.auth.dto.AuthenticationRequest;
-import com.auth.dto.AuthenticationResponse;
-import com.auth.dto.UserDTO;
 import com.auth.exception.AuthException;
+import com.auth.model.dto.AuthenticationRequest;
+import com.auth.model.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.resume.common.library.dto.BaseResponse;
-import com.resume.common.library.dto.SecurityRoles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -32,6 +29,8 @@ class AuthControllerIntegrationTest {
 
     @MockitoBean
     private AuthService authService;
+    @MockitoBean
+    private ProducerService producerService;
 
     private MockMvc mockMvc;
 
@@ -47,10 +46,10 @@ class AuthControllerIntegrationTest {
     @Test
     void testAuthenticate_Success() throws Exception {
         AuthenticationRequest authRequest = new AuthenticationRequest("test", "password");
-        AuthenticationResponse authResponse = new AuthenticationResponse("mocked-jwt-token");
+        String authResponse = "mocked-jwt-token";
 
-        when(authService.generateAuthToken(authRequest.getUsername(), authRequest.getPassword()))
-                .thenReturn(authResponse.getToken());
+        when(authService.authenticateUser(authRequest.getUsername(), authRequest.getPassword()))
+                .thenReturn(authResponse);
 
         mockMvc.perform(post("/auth/authenticate")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -58,19 +57,19 @@ class AuthControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("mocked-jwt-token"));
 
-        verify(authService, times(1)).generateAuthToken(authRequest.getUsername(), authRequest.getPassword());
+        verify(authService, times(1)).authenticateUser(authRequest.getUsername(), authRequest.getPassword());
     }
 
     @Test
     void testAuthenticate_Failure() throws Exception {
         AuthenticationRequest authRequest = new AuthenticationRequest("test", "wrong-password");
-        when(authService.generateAuthToken(authRequest.getUsername(), authRequest.getPassword()))
+        when(authService.authenticateUser(authRequest.getUsername(), authRequest.getPassword()))
                 .thenThrow(new AuthException("Invalid username or password", HttpStatusCode.valueOf(401)));
         mockMvc.perform(post("/auth/authenticate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
                 .andExpect(status().isUnauthorized());
-        verify(authService, times(1)).generateAuthToken(authRequest.getUsername(), authRequest.getPassword());
+        verify(authService, times(1)).authenticateUser(authRequest.getUsername(), authRequest.getPassword());
     }
 
     @Test
@@ -79,11 +78,11 @@ class AuthControllerIntegrationTest {
                 .username("user")
                 .password("password")
                 .email("user@example.com")
+                .role("USER")
                 .build();
-        BaseResponse baseResponse = new BaseResponse("User created.", null, true);
 
-        when(authService.createNewUser(any(UserDTO.class), eq(SecurityRoles.USER.getRole())))
-                .thenReturn(baseResponse);
+        when(authService.createNewUser(any(UserDTO.class)))
+                .thenReturn("User user created.");
 
         mockMvc.perform(post("/auth/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,12 +98,10 @@ class AuthControllerIntegrationTest {
                 .username("admin")
                 .password("password")
                 .email("admin@example.com")
+                .role("ADMIN")
                 .build();
-        BaseResponse baseResponse = new BaseResponse("Admin created.", null, true);
-
-        when(authService.createNewUser(any(UserDTO.class), eq(SecurityRoles.ADMIN.getRole())))
-                .thenReturn(baseResponse);
-
+        when(authService.createNewUser(any(UserDTO.class)))
+                .thenReturn("User admin created.");
         mockMvc.perform(post("/auth/admin/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDTO)))
