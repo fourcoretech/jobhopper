@@ -22,5 +22,5 @@ spring:
       enabled: true
 
 jwt:
-  secret: PHkr3e4RdIuAjrtQ1WAoSYWmFlQVABVSPzZsjl1q8jw=  # Generated using the JwtSecretGenerator in the common-library config folder
+  secret: {JWT_SECRET}  # Generated using the JwtSecretGenerator in the common-library config folder
   expiration: 3600000  # 1 hour in milliseconds
