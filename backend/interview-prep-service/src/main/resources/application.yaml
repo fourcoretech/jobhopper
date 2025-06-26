@@ -16,7 +16,7 @@ spring:
         jwt:
           issuer-uri: http://auth-service:8080
 jwt:
-  secret: PHkr3e4RdIuAjrtQ1WAoSYWmFlQVABVSPzZsjl1q8jw=  # Must match the one in auth-service
+  secret: { JWT_SECRET }  # Must match the one in auth-service
 openai:
-  api-key: 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
+  api-key: { OPEN_AI_KEY }
 
